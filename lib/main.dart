@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:getx_basics/screens/home.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(const MyApp());
 }
 
@@ -11,6 +15,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(debugShowCheckedModeBanner: false, home: Home());
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
+      home: Home(),
+      theme: ThemeData(primaryColor: Colors.orange),
+    );
   }
 }
