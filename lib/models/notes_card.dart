@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:getx_basics/models/notes.dart';
 
 class NotesCard extends StatelessWidget {
-  final String title;
-  final String text;
-  final String time;
+  final Notes note;
 
-  const NotesCard({
-    super.key,
-    required this.title,
-    required this.text,
-    required this.time,
-  });
+  const NotesCard({super.key, required this.note});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    // final size = MediaQuery.of(context).size;
 
     return SizedBox(
       // height: size.height * 0.1,
@@ -26,7 +20,7 @@ class NotesCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                (note.title.isNotEmpty) ? note.title : 'Untitled',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -37,7 +31,7 @@ class NotesCard extends StatelessWidget {
               ),
 
               Text(
-                text,
+                note.content,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 18),
@@ -45,7 +39,10 @@ class NotesCard extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              Text(time, style: TextStyle(fontSize: 13)),
+              Text(
+                note.time,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),

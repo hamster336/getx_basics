@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_basics/models/note_controller.dart';
+import 'package:getx_basics/models/notes.dart';
 import 'package:getx_basics/models/notes_card.dart';
+import 'package:getx_basics/screens/write_note.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    
+    // final size = MediaQuery.of(context).size;
+    final controller = Get.find<NoteController>();
+
     return Scaffold(
       appBar: AppBar(
-        scrolledUnderElevation: 0,
+        forceMaterialTransparency: true,
         title: Text(
           'Notes',
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 35,
             letterSpacing: 0.35,
             fontWeight: FontWeight.w500,
           ),
@@ -26,7 +31,7 @@ class Home extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: SearchBar(
-              elevation: WidgetStatePropertyAll(4),
+              elevation: WidgetStatePropertyAll(2),
               padding: WidgetStatePropertyAll(
                 EdgeInsets.symmetric(horizontal: 15),
               ),
@@ -42,11 +47,18 @@ class Home extends StatelessWidget {
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
                 itemCount: 10,
+                // itemCount: controller.notes.length,
                 itemBuilder: (context, index) {
                   return NotesCard(
-                    title: 'Title',
-                    text: 'Learn state Management in flutter with getx',
-                    time: '12:00',
+                    // note: controller.notes[index],
+                    note: Notes(
+                      title: 'Title',
+                      content: 'Learn state Management in flutter with getx',
+                      time: '12:00',
+                    ),
+                    // title: 'Title',
+                    // text: 'Learn state Management in flutter with getx',
+                    // time: '12:00',
                   );
                 },
               ),
@@ -56,7 +68,9 @@ class Home extends StatelessWidget {
       ),
 
       floatingActionButton: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          Get.to(() => WriteNote(note: null));
+        },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.all(10),
           shape: CircleBorder(),
