@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       home: Home(),
       theme: ThemeData(
-        primaryColor: Colors.orange,
+        // primaryColor: Colors.orange,
         useMaterial3: true,
         appBarTheme: AppBarThemeData(
           surfaceTintColor: Colors.transparent,

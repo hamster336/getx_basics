@@ -12,6 +12,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     // final size = MediaQuery.of(context).size;
     final controller = Get.find<NoteController>();
+    List<Notes> notesList = [];
 
     return Scaffold(
       appBar: AppBar(
@@ -44,24 +45,37 @@ class Home extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemCount: 10,
-                // itemCount: controller.notes.length,
-                itemBuilder: (context, index) {
-                  return NotesCard(
-                    // note: controller.notes[index],
-                    note: Notes(
-                      title: 'Title',
-                      content: 'Learn state Management in flutter with getx',
-                      time: '12:00',
+              child: (notesList.isEmpty)
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'No notes Saved.',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      physics: BouncingScrollPhysics(),
+                      itemCount: 10,
+                      // itemCount: controller.notes.length,
+                      itemBuilder: (context, index) {
+                        return NotesCard(
+                          // note: controller.notes[index],
+                          note: Notes(
+                            title: 'Title',
+                            content:
+                                'Learn state Management in flutter with getx',
+                            time: '12:00',
+                          ),
+                        );
+                      },
                     ),
-                    // title: 'Title',
-                    // text: 'Learn state Management in flutter with getx',
-                    // time: '12:00',
-                  );
-                },
-              ),
             ),
           ),
         ],

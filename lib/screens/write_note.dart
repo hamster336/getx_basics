@@ -24,60 +24,58 @@ class _WriteNoteState extends State<WriteNote> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).requestFocus(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                flex: 1,
-                child: customTextField(
-                  'Title',
-                  titleController,
-                  fs: 30,
-                  fw: FontWeight.w600,
-                  ls: 0.5,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    maxLines: null,
+                    textCapitalization: TextCapitalization.sentences,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                    decoration: InputDecoration(
+                      // border: InputBorder.none,
+                      border: InputBorder.none,
+                      hintText: 'Title',
+                      hintStyle: TextStyle(color: Colors.grey.shade500),
+                    ),
+                  ),
+
+                  Text(
+                    // widget.note?.time ?? '12:00 | 1 Jan 2025',
+                    '12:00 | 1 Jan 2025',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: TextField(
+                controller: contentController,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Content',
+                  hintStyle: TextStyle(color: Colors.grey.shade500),
                 ),
               ),
-
-              Text(
-                (widget.note == null) ? 'Jan 1, 2025' : widget.note!.time,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              ),
-
-              Expanded(
-                child: customTextField(
-                  'Content',
-                  contentController,
-                  fs: 20,
-                  fw: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
-    );
-  }
-
-  Widget customTextField(
-    String hintText,
-    TextEditingController textController, {
-    required double fs,
-    required FontWeight fw,
-    double? ls,
-  }) {
-    return TextField(
-      // expands: true,
-      decoration: InputDecoration(
-        // border: InputBorder.none,
-        
-        border: InputBorder.none,
-        hintText: hintText,
-        hintStyle: TextStyle(fontSize: fs, fontWeight: fw, letterSpacing: ls),
       ),
     );
   }
