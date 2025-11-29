@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'notes.dart';
 
@@ -10,20 +12,27 @@ class LocalStorage {
     await Hive.openBox<Notes>(_notesBox);
   }
 
-  static void saveNote(Notes note) async {
+  static Future<void> saveNote(Notes note) async {
     final box = Hive.box<Notes>(_notesBox);
-    await box.add(note);
+    if (note.isInBox) {
+      note.save();
+    } else {
+      await box.add(note);
+    }
+
+    log('note saved');
   }
 
   static List<Notes> getNotes() {
     final box = Hive.box<Notes>(_notesBox);
-    return box.values.toList();
+    final list = box.values.toList();
+    list.sort((a, b) => b.time.compareTo(a.time));
+    return list;
   }
 
-  static void deleteNotes(List<int> list) async {
-    final box = Hive.box<Notes>(_notesBox);
-    for (var i in list) {
-      await box.deleteAt(i);
+  static Future<void> deleteNotes(List<Notes> notes) async {
+    for (var note in notes) {
+      await note.delete();
     }
   }
 }

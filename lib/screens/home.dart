@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getx_basics/models/local_storage.dart';
 import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/models/notes.dart';
 import 'package:getx_basics/models/notes_card.dart';
@@ -12,8 +15,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     // final size = MediaQuery.of(context).size;
     final controller = Get.find<NoteController>();
-    List<Notes> notesList = [];
-
+    List<Notes> notesList = LocalStorage.getNotes();
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -32,6 +34,7 @@ class Home extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: SearchBar(
+              onTap: () => log('${LocalStorage.getNotes().length}'),
               elevation: WidgetStatePropertyAll(2),
               padding: WidgetStatePropertyAll(
                 EdgeInsets.symmetric(horizontal: 15),
@@ -45,37 +48,39 @@ class Home extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: (notesList.isEmpty)
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'No notes Saved.',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      physics: BouncingScrollPhysics(),
-                      itemCount: 10,
-                      // itemCount: controller.notes.length,
-                      itemBuilder: (context, index) {
-                        return NotesCard(
-                          // note: controller.notes[index],
-                          note: Notes(
-                            title: 'Title',
-                            content:
-                                'Learn state Management in flutter with getx',
-                            time: '12:00',
-                          ),
-                        );
-                      },
-                    ),
+              child:
+                  // (false)
+                  //     ? Center(
+                  //         child: Column(
+                  //           mainAxisSize: MainAxisSize.min,
+                  //           children: [
+                  //             Text(
+                  //               'No notes Saved.',
+                  //               style: TextStyle(
+                  //                 fontSize: 17,
+                  //                 fontWeight: FontWeight.w500,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       )
+                  //     :
+                  ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    // itemCount: 10,
+                    itemCount: controller.notes.length,
+                    itemBuilder: (context, index) {
+                      return NotesCard(
+                        note: controller.notes[index],
+                        // note: Notes(
+                        //   title: 'Title',
+                        //   content:
+                        //       'Learn state Management in flutter with getx',
+                        //   time: '12:00',
+                        // ),
+                      );
+                    },
+                  ),
             ),
           ),
         ],

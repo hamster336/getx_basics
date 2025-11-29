@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/models/notes.dart';
 
 class WriteNote extends StatefulWidget {
@@ -13,6 +15,7 @@ class WriteNote extends StatefulWidget {
 class _WriteNoteState extends State<WriteNote> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
+  final controller = Get.find<NoteController>();
 
   @override
   void dispose() {
@@ -25,7 +28,24 @@ class _WriteNoteState extends State<WriteNote> {
   Widget build(BuildContext context) {
     return Scaffold(
       // resizeToAvoidBottomInset: false,
-      appBar: AppBar(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () async {
+            if (widget.note != null) {
+              if (widget.note!.title.trim().isNotEmpty &&
+                  widget.note!.content.trim().isNotEmpty) {
+                widget.note!.time = DateTime.now().millisecondsSinceEpoch
+                    .toString();
+
+                await controller.saveNote(widget.note!);
+              }
+            }
+            Get.back();
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: CustomScrollView(

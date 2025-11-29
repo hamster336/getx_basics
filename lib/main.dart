@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:getx_basics/models/local_storage.dart';
 import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/screens/home.dart';
 
@@ -8,7 +9,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  await LocalStorage.init();
   Get.put(NoteController());
+  
   runApp(const MyApp());
 }
 
