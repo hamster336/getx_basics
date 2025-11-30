@@ -3,26 +3,17 @@ import 'package:get/get.dart';
 import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/models/notes.dart';
 
-class WriteNote extends StatefulWidget {
-  final Notes? note;
+class WriteNote extends StatelessWidget {
+  final Notes note;
 
-  const WriteNote({super.key, this.note});
+  final TextEditingController titleController;
+  final TextEditingController contentController;
+  final NotesController controller;
 
-  @override
-  State<WriteNote> createState() => _WriteNoteState();
-}
-
-class _WriteNoteState extends State<WriteNote> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController contentController = TextEditingController();
-  final controller = Get.find<NoteController>();
-
-  @override
-  void dispose() {
-    titleController.dispose();
-    contentController.dispose();
-    super.dispose();
-  }
+  WriteNote({super.key, required this.note})
+    : titleController = TextEditingController(text: note.title),
+      contentController = TextEditingController(text: note.content),
+      controller = Get.find<NotesController>();
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +23,17 @@ class _WriteNoteState extends State<WriteNote> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () async {
-            if (widget.note != null) {
-              if (widget.note!.title.trim().isNotEmpty &&
-                  widget.note!.content.trim().isNotEmpty) {
-                widget.note!.time = DateTime.now().millisecondsSinceEpoch
-                    .toString();
+            final newTitle = titleController.text.trim();
+            final newContent = contentController.text.trim();
 
-                await controller.saveNote(widget.note!);
-              }
+            note.title = newTitle;
+            note.content = newContent;
+            if (note.title.isNotEmpty || note.content.isNotEmpty) {
+              note.time = DateTime.now().millisecondsSinceEpoch.toString();
+
+              await controller.saveNote(
+                note,
+              ); // save only if eihter title or content are not empty
             }
             Get.back();
           },
@@ -54,6 +48,7 @@ class _WriteNoteState extends State<WriteNote> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// title text field
                   TextField(
                     controller: titleController,
                     maxLines: null,
@@ -64,7 +59,6 @@ class _WriteNoteState extends State<WriteNote> {
                       letterSpacing: 0.5,
                     ),
                     decoration: InputDecoration(
-                      // border: InputBorder.none,
                       border: InputBorder.none,
                       hintText: 'Title',
                       hintStyle: TextStyle(color: Colors.grey.shade500),
@@ -72,14 +66,18 @@ class _WriteNoteState extends State<WriteNote> {
                   ),
 
                   Text(
-                    // widget.note?.time ?? '12:00 | 1 Jan 2025',
-                    '12:00 | 1 Jan 2025',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                    getTime(context, note.time),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ],
               ),
             ),
 
+            // body or content textField
             SliverFillRemaining(
               hasScrollBody: false,
               child: TextField(
@@ -99,4 +97,13 @@ class _WriteNoteState extends State<WriteNote> {
       ),
     );
   }
+
+  String getTime(BuildContext context, String time) {
+    if (time.isEmpty) return '';
+    final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
+    return '${TimeOfDay.fromDateTime(date).format(context)} | ${'${date.day}/${date.month}/${date.year}'}';
+  }
+
+  bool hasChanged(String a, String b) =>
+      ((note.title != a) || (note.content != b));
 }

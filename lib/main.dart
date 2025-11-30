@@ -10,8 +10,8 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await LocalStorage.init();
-  Get.put(NoteController());
-  
+  Get.put(NotesController());
+
   runApp(const MyApp());
 }
 

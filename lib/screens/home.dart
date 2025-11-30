@@ -14,8 +14,8 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final size = MediaQuery.of(context).size;
-    final controller = Get.find<NoteController>();
-    List<Notes> notesList = LocalStorage.getNotes();
+    final controller = Get.find<NotesController>();
+    // List<Notes> notesList = LocalStorage.getNotes();
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,39 +48,33 @@ class Home extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child:
-                  // (false)
-                  //     ? Center(
-                  //         child: Column(
-                  //           mainAxisSize: MainAxisSize.min,
-                  //           children: [
-                  //             Text(
-                  //               'No notes Saved.',
-                  //               style: TextStyle(
-                  //                 fontSize: 17,
-                  //                 fontWeight: FontWeight.w500,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       )
-                  //     :
-                  ListView.builder(
-                    physics: BouncingScrollPhysics(),
-                    // itemCount: 10,
-                    itemCount: controller.notes.length,
-                    itemBuilder: (context, index) {
-                      return NotesCard(
-                        note: controller.notes[index],
-                        // note: Notes(
-                        //   title: 'Title',
-                        //   content:
-                        //       'Learn state Management in flutter with getx',
-                        //   time: '12:00',
-                        // ),
-                      );
-                    },
-                  ),
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                // itemCount: 10,
+                itemCount: controller.notes.length,
+                itemBuilder: (context, index) {
+                  if (controller.notes.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'No notes Saved.',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return NotesCard(
+                      note: controller.notes[index],
+                    );
+                  }
+                },
+              ),
             ),
           ),
         ],
@@ -88,7 +82,11 @@ class Home extends StatelessWidget {
 
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Get.to(() => WriteNote(note: null));
+          Get.to(
+            () => WriteNote(
+              note: Notes(title: '', content: '', time: ''),
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.all(10),
