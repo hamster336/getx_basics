@@ -3,7 +3,7 @@ import 'package:getx_basics/models/local_storage.dart';
 import 'package:getx_basics/models/notes.dart';
 
 class NotesController extends GetxController {
-  List<Notes> notes = <Notes>[].obs;
+  RxList notes = <Notes>[].obs;
 
   @override
   void onInit() {
@@ -17,25 +17,21 @@ class NotesController extends GetxController {
 
   Future<void> saveNote(Notes note) async {
     await LocalStorage.saveNote(note);
-    if (!notes.contains(note)) notes.add(note);
-  }
 
-  Future<void> deleteNotes(List<int> indices) async {
-    indices.sort((a, b) => b.compareTo(a));
-    List<Notes> toDelete = [];
+    int index = notes.indexWhere((n) => n.key == note.key);
 
-    for (var index in indices) {
-      toDelete.add(notes[index]);
-      notes.removeAt(index);
+    if (index == -1) {
+      notes.add(note); // add a new note
+    } else {
+      notes[index] = note; // update existing note
     }
-    await LocalStorage.deleteNotes(toDelete);
+    notes.sort((a, b) => b.time.compareTo(a.time));
+    notes.refresh();
   }
 
-  Future<void> deleteSingleNote(Notes note) async{
-    int index = notes.indexOf(note);
-    notes.removeAt(index);
-    await LocalStorage.deleteNotes([note]);
+  Future<void> deleteNote(Notes note) async {
+    notes.removeWhere((n) => n.key == note.key);
+    notes.refresh();
+    await LocalStorage.deleteNote(note);
   }
-
-  // void updateNote(Notes newNote, int index) => notes[index] = newNote;
 }

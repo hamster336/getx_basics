@@ -13,9 +13,8 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final size = MediaQuery.of(context).size;
     final controller = Get.find<NotesController>();
-    // List<Notes> notesList = LocalStorage.getNotes();
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,33 +47,44 @@ class Home extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: ListView.builder(
-                physics: BouncingScrollPhysics(),
-                // itemCount: 10,
-                itemCount: controller.notes.length,
-                itemBuilder: (context, index) {
-                  if (controller.notes.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'No notes Saved.',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                            ),
+              child: Obx(() {
+                if (controller.notes.isNotEmpty) {
+                  return ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: controller.notes.length,
+                    itemBuilder: (context, index) {
+                      if (controller.notes.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'No notes Saved.',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        );
+                      } else {
+                        return NotesCard(note: controller.notes[index]);
+                      }
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: const Text(
+                      'Nothing to see here.',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
                       ),
-                    );
-                  } else {
-                    return NotesCard(
-                      note: controller.notes[index],
-                    );
-                  }
-                },
-              ),
+                    ),
+                  );
+                }
+              }),
             ),
           ),
         ],

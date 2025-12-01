@@ -30,9 +30,7 @@ class LocalStorage {
     return list;
   }
 
-  static Future<void> deleteNotes(List<Notes> notes) async {
-    for (var note in notes) {
+  static Future<void> deleteNote(Notes note) async {
       await note.delete();
-    }
   }
 }

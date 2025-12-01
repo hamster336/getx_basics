@@ -9,11 +9,7 @@ class NotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final size = MediaQuery.of(context).size;
-    Notes copy = note;
-
     return SizedBox(
-      // height: size.height * 0.1,
       child: InkWell(
         onTap: () => Get.to(WriteNote(note: note)),
         child: Card(
@@ -25,7 +21,7 @@ class NotesCard extends StatelessWidget {
               children: [
                 // title
                 Text(
-                  (note.title.isNotEmpty) ? note.title : 'Untitled',
+                  getText(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -37,7 +33,7 @@ class NotesCard extends StatelessWidget {
 
                 // content
                 Text(
-                  note.content,
+                  getText(title: false),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
@@ -58,21 +54,22 @@ class NotesCard extends StatelessWidget {
     );
   }
 
-  String getTitle(Notes copy) {
+  String getText({bool title = true}) {
     String text = '';
-    if (copy.title.isEmpty) {
-      int index = copy.content.indexOf('\n');
-      if (index == -1) index = copy.content.length;
-      text = copy.content.substring(0, index + 1);
+    int l = note.content.length;
+    if (note.title.isEmpty) {
+      int index = note.content.indexOf('\n');
+      if (index == -1) index = l;
+      if (title) {
+        text = note.content.substring(0, (index + 1 > l ? index : index + 1));
+      } else {
+        text = note.content.substring(index, note.content.length).trim();
+      }
     } else {
-      return copy.title;
+      return (title) ? note.title : note.content;
     }
     return text;
   }
-
-  // String getContent(Notes copy) {
-
-  // }
 
   String getDate(BuildContext context, String time) {
     final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
@@ -100,7 +97,7 @@ class NotesCard extends StatelessWidget {
 
     if (date.year < now.year) return '${date.day}/${date.month}/${date.year}';
 
-    return '${date.day} ${months[date.month - 1]}';
+    return '${months[date.month - 1]} ${date.day}';
   }
 
   static String formatTime({

@@ -18,27 +18,26 @@ class WriteNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(
-          onPressed: () async {
-            final newTitle = titleController.text.trim();
-            final newContent = contentController.text.trim();
-
-            note.title = newTitle;
-            note.content = newContent;
-            if (note.title.isNotEmpty || note.content.isNotEmpty) {
-              note.time = DateTime.now().millisecondsSinceEpoch.toString();
-
-              await controller.saveNote(
-                note,
-              ); // save only if eihter title or content are not empty
-            }
+          onPressed: () {
+            _save();
             Get.back();
           },
           icon: Icon(Icons.arrow_back),
         ),
+
+        actions: [
+          IconButton(
+            onPressed: () {
+              _delete();
+            },
+            icon: Icon(Icons.delete, color: Colors.red, size: 30),
+          ),
+
+          const SizedBox(width: 10),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -101,9 +100,84 @@ class WriteNote extends StatelessWidget {
   String getTime(BuildContext context, String time) {
     if (time.isEmpty) return '';
     final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
-    return '${TimeOfDay.fromDateTime(date).format(context)} | ${'${date.day}/${date.month}/${date.year}'}';
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return '${TimeOfDay.fromDateTime(date).format(context)} | ${'${months[date.month - 1]} ${date.day}, ${date.year}'}';
   }
 
   bool hasChanged(String a, String b) =>
       ((note.title != a) || (note.content != b));
+
+  void _save() async {
+    final newTitle = titleController.text.trim();
+    final newContent = contentController.text.trim();
+
+    bool isEmpty =
+        newTitle.isEmpty &&
+        newContent.isEmpty; // check if both the fields are empty or not
+
+    bool isChanged =
+        (newTitle != note.title) ||
+        (newContent !=
+            note.content); // check if any of the field is changed or not
+
+    if (isChanged) {
+      note.title = newTitle;
+      note.content = newContent;
+
+      if (!isEmpty) {
+        // if changed but not empty, update time and save
+        note.time = DateTime.now().millisecondsSinceEpoch.toString();
+
+        await controller.saveNote(note);
+      } else {
+        // if fields were changed and now are empty, delete the note
+        await controller.deleteNote(note);
+      }
+    }
+  }
+
+  void _delete() {
+    Get.defaultDialog(
+      title: 'Confirm Delete?',
+      titleStyle: TextStyle(
+        fontSize: 25,
+        fontWeight: FontWeight.w600,
+        color: Colors.red,
+      ),
+      middleText: 'Are you sure you want to delete this note?',
+      middleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      barrierDismissible: false, // forces user to choose
+      cancel: TextButton(
+        onPressed: () => Get.back(), // pop the dialog box
+        child: const Text(
+          'Cancel',
+          style: TextStyle(fontSize: 17, color: Colors.blue),
+        ),
+      ),
+      confirm: TextButton(
+        onPressed: () async {
+          await controller.deleteNote(note);
+          Get.back(); // pop dialog box
+          Get.back(); // pop the notesScreen
+        }, // pop the dialog box
+        child: const Text(
+          'Yes',
+          style: TextStyle(fontSize: 17, color: Colors.red),
+        ),
+      ),
+    );
+  }
 }
