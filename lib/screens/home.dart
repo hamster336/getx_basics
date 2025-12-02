@@ -34,7 +34,8 @@ class Home extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: SearchBar(
               onTap: () => log('${LocalStorage.getNotes().length}'),
-              elevation: WidgetStatePropertyAll(2),
+              // backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+              elevation: WidgetStatePropertyAll(3),
               padding: WidgetStatePropertyAll(
                 EdgeInsets.symmetric(horizontal: 15),
               ),
@@ -94,7 +95,11 @@ class Home extends StatelessWidget {
         onPressed: () {
           Get.to(
             () => WriteNote(
-              note: Notes(title: '', content: '', time: ''),
+              note: Notes(
+                title: '',
+                content: '',
+                time: DateTime.now().millisecondsSinceEpoch.toString(),
+              ),
             ),
           );
         },

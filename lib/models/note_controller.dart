@@ -29,6 +29,14 @@ class NotesController extends GetxController {
     notes.refresh();
   }
 
+  Future<void> deleteNotes(List<int> keys) async{
+    for(var key in keys){
+      notes.removeWhere((n) => n.key == key);
+    }
+    notes.refresh();
+    
+  }
+
   Future<void> deleteNote(Notes note) async {
     notes.removeWhere((n) => n.key == note.key);
     notes.refresh();

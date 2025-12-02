@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_basics/models/notes.dart';
+import 'package:getx_basics/models/select_controller.dart';
 import 'package:getx_basics/screens/write_note.dart';
 
 class NotesCard extends StatelessWidget {
@@ -9,10 +10,37 @@ class NotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SelectController selectController = Get.find<SelectController>();
+
+    bool selected = (selectController.selectedIndex.contains(note.key));
+
     return SizedBox(
       child: InkWell(
-        onTap: () => Get.to(WriteNote(note: note)),
+        onTap: () {
+          if (selectController.selectionMode.value) {
+            // if selection mode is on, select or deselect on tap
+            if (selected) {
+              selectController.selectedIndex.remove(note.key);
+              if (selectController.selectedIndex.isEmpty) {
+                // if selected Index is empty, turn off selection mode
+                selectController.selectionMode.value = false;
+              }
+            } else {
+              selectController.selectedIndex.add(note.key);
+            }
+          } else {
+            // if selection mode is off, navigate to write note screen
+            Get.to(WriteNote(note: note));
+          }
+        },
+        onLongPress: () {
+          selectController.selectionMode.value = true;
+          selectController.selectedIndex.add(note.key);
+        },
         child: Card(
+          // surfaceTintColor: ,
+          elevation: selected ? 6 : 2,
+          borderOnForeground: true,
           margin: EdgeInsets.symmetric(vertical: 5),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -48,6 +76,7 @@ class NotesCard extends StatelessWidget {
                 ),
               ],
             ),
+            
           ),
         ),
       ),

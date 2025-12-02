@@ -33,4 +33,11 @@ class LocalStorage {
   static Future<void> deleteNote(Notes note) async {
       await note.delete();
   }
+
+  static Future<void> deleteNotes(List<int> keys) async{
+    final box = Hive.box<Notes>(_notesBox);
+    for(var key in keys){
+      await box.delete(key);
+    }
+  }
 }
