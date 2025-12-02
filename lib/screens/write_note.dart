@@ -27,17 +27,6 @@ class WriteNote extends StatelessWidget {
           },
           icon: Icon(Icons.arrow_back),
         ),
-
-        actions: [
-          IconButton(
-            onPressed: () {
-              _delete();
-            },
-            icon: Icon(Icons.delete, color: Colors.red, size: 30),
-          ),
-
-          const SizedBox(width: 10),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -86,7 +75,7 @@ class WriteNote extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: 'Content',
+                  hintText: 'Start typing.',
                   hintStyle: TextStyle(color: Colors.grey.shade500),
                 ),
               ),
@@ -147,37 +136,5 @@ class WriteNote extends StatelessWidget {
         await controller.deleteNote(note);
       }
     }
-  }
-
-  void _delete() {
-    Get.defaultDialog(
-      title: 'Confirm Delete?',
-      titleStyle: TextStyle(
-        fontSize: 25,
-        fontWeight: FontWeight.w600,
-        color: Colors.red,
-      ),
-      middleText: 'Are you sure you want to delete this note?',
-      middleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-      barrierDismissible: false, // forces user to choose
-      cancel: TextButton(
-        onPressed: () => Get.back(), // pop the dialog box
-        child: const Text(
-          'Cancel',
-          style: TextStyle(fontSize: 17, color: Colors.blue),
-        ),
-      ),
-      confirm: TextButton(
-        onPressed: () async {
-          await controller.deleteNote(note);
-          Get.back(); // pop dialog box
-          Get.back(); // pop the notesScreen
-        }, // pop the dialog box
-        child: const Text(
-          'Yes',
-          style: TextStyle(fontSize: 17, color: Colors.red),
-        ),
-      ),
-    );
   }
 }

@@ -13,6 +13,7 @@ void main() async {
   await LocalStorage.init();
   Get.put(NotesController());
   Get.put(SelectController());
+  Get.put(SearchController());
 
   runApp(const MyApp());
 }

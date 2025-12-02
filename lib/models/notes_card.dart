@@ -12,75 +12,87 @@ class NotesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     SelectController selectController = Get.find<SelectController>();
 
-    bool selected = (selectController.selectedIndex.contains(note.key));
+    return Obx(() {
+      bool selected = (selectController.selectedIndex.contains(note.key));
 
-    return SizedBox(
-      child: InkWell(
-        onTap: () {
-          if (selectController.selectionMode.value) {
-            // if selection mode is on, select or deselect on tap
-            if (selected) {
-              selectController.selectedIndex.remove(note.key);
-              if (selectController.selectedIndex.isEmpty) {
-                // if selected Index is empty, turn off selection mode
-                selectController.selectionMode.value = false;
+      return SizedBox(
+        child: InkWell(
+          onTap: () {
+            if (selectController.selectionMode.value) {
+              // if selection mode is on, select or deselect on tap
+              if (selected) {
+                selectController.selectedIndex.remove(note.key);
+                selectController.selectAll.value = false;
+              } else {
+                selectController.selectedIndex.add(note.key);
               }
             } else {
-              selectController.selectedIndex.add(note.key);
+              // if selection mode is off, navigate to write note screen
+              Get.to(WriteNote(note: note));
             }
-          } else {
-            // if selection mode is off, navigate to write note screen
-            Get.to(WriteNote(note: note));
-          }
-        },
-        onLongPress: () {
-          selectController.selectionMode.value = true;
-          selectController.selectedIndex.add(note.key);
-        },
-        child: Card(
-          // surfaceTintColor: ,
-          elevation: selected ? 6 : 2,
-          borderOnForeground: true,
-          margin: EdgeInsets.symmetric(vertical: 5),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // title
-                Text(
-                  getText(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+          },
+          onLongPress: () {
+            selectController.selectionMode.value = true;
+            selectController.selectedIndex.add(note.key);
+          },
+          child: Card(
+            surfaceTintColor: (selected) ? Colors.grey.shade700 : null,
+            elevation: selected ? 5 : 3,
+            borderOnForeground: false,
+            margin: EdgeInsets.symmetric(vertical: 5),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // title
+                        Text(
+                          getText(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 27,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+
+                        // content
+                        Text(
+                          getText(title: false),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // time
+                        Text(
+                          getDate(context, note.time),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
-                // content
-                Text(
-                  getText(title: false),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-
-                const SizedBox(height: 10),
-
-                // time
-                Text(
-                  getDate(context, note.time),
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                ),
-              ],
+                  if (selected) Center(child: Icon(Icons.check, size: 30)),
+                ],
+              ),
             ),
-            
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   String getText({bool title = true}) {
@@ -104,7 +116,9 @@ class NotesCard extends StatelessWidget {
     final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     DateTime now = DateTime.now();
 
-    final difference = date.difference(now).inDays;
+    final today = DateTime(now.year, now.month, now.day);
+    final noteDay = DateTime(date.year, date.month, date.day);
+    final difference = today.difference(noteDay).inDays;
 
     List<String> months = [
       'January',
