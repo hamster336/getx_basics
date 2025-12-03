@@ -3,7 +3,7 @@ import 'package:getx_basics/models/local_storage.dart';
 import 'package:getx_basics/models/notes.dart';
 
 class NotesController extends GetxController {
-  RxList notes = <Notes>[].obs;
+  RxList<Notes> notes = <Notes>[].obs;
 
   @override
   void onInit() {

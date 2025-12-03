@@ -3,17 +3,19 @@ import 'package:get/get.dart';
 import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/models/notes.dart';
 import 'package:getx_basics/models/notes_card.dart';
+import 'package:getx_basics/models/search_controller.dart';
 import 'package:getx_basics/models/select_controller.dart';
 import 'package:getx_basics/screens/write_note.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  final TextEditingController controller;
+  Home({super.key}) : controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final noteController = Get.find<NotesController>();
     final selectController = Get.find<SelectController>();
-    // final searchController = Get.find<SearchController>();
+    final searchController = Get.find<SearchNoteController>();
 
     void delete() {
       Get.defaultDialog(
@@ -61,9 +63,15 @@ class Home extends StatelessWidget {
       }
     }
 
-    // List<Notes>? search(String text) {
-    //   for (var note in noteController.notes) {}
-    // }
+    void search(String text) {
+      searchController.match.clear();
+      for (var note in noteController.notes) {
+        if (note.title.toLowerCase().contains(text) ||
+            note.content.toLowerCase().contains(text)) {
+          searchController.match.add(note);
+        }
+      }
+    }
 
     return Obx(() {
       return Scaffold(
@@ -103,7 +111,16 @@ class Home extends StatelessWidget {
                   vertical: 10,
                 ),
                 child: SearchBar(
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (controller.text.trim().isNotEmpty) {
+                      searchController.searchEmpty.value = false;
+                      search(controller.text.trim().toLowerCase());
+                    } else {
+                      searchController.searchEmpty.value = true;
+                      searchController.match.clear();
+                    }
+                  },
+                  controller: controller,
                   elevation: WidgetStatePropertyAll(2.5),
                   padding: WidgetStatePropertyAll(
                     EdgeInsets.symmetric(horizontal: 15),
@@ -145,53 +162,114 @@ class Home extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ).paddingSymmetric(horizontal: 5),
+
+                    Spacer(),
+
+                    GestureDetector(
+                      onTap: () {
+                        selectController.selectionMode.value = false;
+                        selectController.selectedIndex.clear();
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ).paddingOnly(right: 20),
                   ],
                 ).paddingOnly(left: 20, top: 10),
 
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 5,
-                  ),
-                  child: (noteController.notes.isNotEmpty)
-                      ? ListView.builder(
-                          physics: BouncingScrollPhysics(),
-                          itemCount: noteController.notes.length,
-                          itemBuilder: (context, index) {
-                            if (noteController.notes.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'No notes Saved.',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return NotesCard(
-                                note: noteController.notes[index],
-                              );
-                            }
-                          },
-                        )
-                      : Center(
-                          child: const Text(
-                            'Nothing to see here.',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+              (!searchController.searchEmpty.value)
+                  ? Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 5,
                         ),
-                ),
-              ),
+                        child: (searchController.match.isNotEmpty)
+                            ? ListView.builder(
+                                physics: BouncingScrollPhysics(),
+                                itemCount: searchController.match.length,
+                                itemBuilder: (context, index) {
+                                  if (searchController.match.isEmpty) {
+                                    return Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'No match found.',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return NotesCard(
+                                      note: searchController.match[index],
+                                    );
+                                  }
+                                },
+                              )
+                            : Center(
+                                child: const Text(
+                                  'Nothing to see here.',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    )
+                  : Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 5,
+                        ),
+                        child: (noteController.notes.isNotEmpty)
+                            ? ListView.builder(
+                                physics: BouncingScrollPhysics(),
+                                itemCount: noteController.notes.length,
+                                itemBuilder: (context, index) {
+                                  if (noteController.notes.isEmpty) {
+                                    return Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            'No notes Saved.',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return NotesCard(
+                                      note: noteController.notes[index],
+                                    );
+                                  }
+                                },
+                              )
+                            : Center(
+                                child: const Text(
+                                  'Nothing to see here.',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ),
             ],
           ),
         ),

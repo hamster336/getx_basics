@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:getx_basics/models/local_storage.dart';
 import 'package:getx_basics/models/note_controller.dart';
 import 'package:getx_basics/models/select_controller.dart';
+import 'package:getx_basics/models/search_controller.dart';
 import 'package:getx_basics/screens/home.dart';
 
 void main() async {
@@ -13,7 +14,7 @@ void main() async {
   await LocalStorage.init();
   Get.put(NotesController());
   Get.put(SelectController());
-  Get.put(SearchController());
+  Get.put(SearchNoteController());
 
   runApp(const MyApp());
 }
